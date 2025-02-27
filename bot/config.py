@@ -11,7 +11,6 @@ class BotConfig:
 
 
 
-
 class Settings(BaseSettings):
     token: str
     db_url: str
