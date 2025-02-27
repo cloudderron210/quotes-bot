@@ -3,6 +3,7 @@ from aiogram.filters import Command
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 from bot.database import crud
+from bot.layout import keyboards as kb
 
 
 router = Router()
@@ -12,6 +13,12 @@ async def menu(msg: Message, session: AsyncSession):
     username = msg.chat.username
     try: 
         new_user = await crud.insert_new_user(user_id, username, session)
+        set_def_author = await crud.set_default_author_for_new(new_user, session)
         await msg.answer('New user added!')
     except Exception as e:
         await msg.answer(f'{e}')
+    
+    await msg.answer('Menu:', reply_markup=kb.build_menu(msg.chat.id))
+
+
+

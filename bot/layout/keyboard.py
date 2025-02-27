@@ -11,8 +11,6 @@ authors_per_user = {}
 
 def build_menu(chat_id, change=False):
     current_state = chat_states.get(chat_id, 'Turn on')
-
-    
     if change:
         current_state = 'Turn off' if current_state == 'Turn on' else 'Turn on'
         chat_states[chat_id] = current_state
@@ -24,7 +22,6 @@ def build_menu(chat_id, change=False):
     
     for item in current_menu:
         keyboard_builder.button(text=item, callback_data=item)
-
     
     keyboard_builder.adjust(1)
     
@@ -48,15 +45,6 @@ def build_frequency():
     keyboard_builder.adjust(1)
 
     return keyboard_builder.as_markup()
-    
-    
-    
-        
-    
-    
-    
-
-
     
     
 def build_authors(chat_id, new_author=None):

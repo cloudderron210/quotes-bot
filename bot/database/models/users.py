@@ -15,3 +15,4 @@ class User(Base):
     default_author: Mapped[int] = mapped_column(ForeignKey('authors.id'), nullable=True)
 
     authors: Mapped[list['Author']] = relationship(secondary='user_author', back_populates='users')
+    def_author: Mapped['Author'] = relationship('Author',back_populates='default_users')
