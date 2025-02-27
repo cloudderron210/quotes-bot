@@ -7,7 +7,7 @@ from bot_instance import bot
 # from bot.handlers.user_handlers import user_router
 # from bot.handlers.inline_handlers import inline_router
 # from bot.handlers.callback_handlers import callback_router
-from bot.handlers import start
+from bot.handlers import start, add_quote
 from bot.config import BotConfig
 # from scheduler import scheduler, start_scheduler
 
@@ -21,6 +21,7 @@ def register_routers(dp: Dispatcher) -> None:
     # dp.include_router(inline_router)
     # dp.include_router(callback_router)
     dp.include_router(start.router)
+    dp.include_router(add_quote.router)
     
 # async def on_startup():
 #     start_scheduler()

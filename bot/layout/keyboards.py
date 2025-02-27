@@ -1,3 +1,5 @@
+from aiogram.types import InlineKeyboardButton
+from aiogram.types.inline_keyboard_markup import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
@@ -21,3 +23,10 @@ def build_menu(chat_id, change=False):
 
     return keyboard_builder.as_markup()
     
+
+
+
+
+cancel_adding_new_quote = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='Cancel', callback_data='cancel_quote')]
+])

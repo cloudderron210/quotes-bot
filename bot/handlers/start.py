@@ -7,6 +7,7 @@ from bot.layout import keyboards as kb
 
 
 router = Router()
+
 @router.message(Command(commands=['menu', 'start']))
 async def menu(msg: Message, session: AsyncSession):
     user_id = msg.chat.id
@@ -17,8 +18,8 @@ async def menu(msg: Message, session: AsyncSession):
         await msg.answer('New user added!')
     except Exception as e:
         await msg.answer(f'{e}')
-    
     await msg.answer('Menu:', reply_markup=kb.build_menu(msg.chat.id))
+
 
 
 

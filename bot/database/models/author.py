@@ -4,7 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from bot.database.models import Base
 
 if TYPE_CHECKING:
-    from bot.database.models import User
+    from bot.database.models import User, Quote
 
 class Author(Base):
     __tablename__ = 'authors'
@@ -14,3 +14,5 @@ class Author(Base):
     
     users: Mapped[list['User']] = relationship(secondary='user_author', back_populates='authors')
     default_users: Mapped[list['User']] = relationship('User', back_populates='def_author')
+    quotes: Mapped[list["Quote"]] = relationship("Quote", back_populates="author")
+    
