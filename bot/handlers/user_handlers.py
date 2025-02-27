@@ -22,7 +22,6 @@ async def menu(msg: Message,) -> None:
         await msg.answer(f'{res_check}')
         if res_check == 0:
             result2 = set_default_author(user_id, 'Jason Statham 🧔')
-            # await msg.answer(f'{result2}')
         result3 = set_user_authors(user_id)
         # await msg.answer(f'{result}')
         # await msg.answer(f'{result3}')
@@ -35,7 +34,8 @@ async def menu(msg: Message,) -> None:
         print(f'{e}')
     print(msg.chat.id, msg.chat.username)
     await msg.answer('Menu:', reply_markup=kb.build_menu(msg.chat.id))
-
+    
+    
 # @user_router.message(Command('start'))
 # async def cmd_start(msg: Message, config: BotConfig) -> None:
 #     ''' Processes the `start` '''

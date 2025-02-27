@@ -89,7 +89,6 @@ def add_misc_quote_2(author, quote, user_id):
     finally:
         session.close()
     
-    
 
 def get_random_message_2(user_id, mixed=False):
     session = Session()
@@ -130,10 +129,6 @@ def get_random_message_2(user_id, mixed=False):
         raise Exception(e)
     finally:
         session.close()
-
-
-
-
 
 
 def insert_new_user_2(user_id, username):

@@ -2,23 +2,28 @@ import asyncio
 import logging
 
 from aiogram import Dispatcher, types
+from bot.middleware import DatabaseMiddleware
 from bot_instance import bot
-from bot.handlers.user_handlers import user_router
-from bot.handlers.inline_handlers import inline_router
-from bot.handlers.callback_handlers import callback_router
+# from bot.handlers.user_handlers import user_router
+# from bot.handlers.inline_handlers import inline_router
+# from bot.handlers.callback_handlers import callback_router
+from bot.handlers import start
 from bot.config import BotConfig
-from scheduler import scheduler, start_scheduler
+# from scheduler import scheduler, start_scheduler
 
 dp = Dispatcher()
 
+dp.update.middleware(DatabaseMiddleware())
+
 def register_routers(dp: Dispatcher) -> None:
     ''' Registers routers'''
-    dp.include_router(user_router)
-    dp.include_router(inline_router)
-    dp.include_router(callback_router)
+    # dp.include_router(user_router)
+    # dp.include_router(inline_router)
+    # dp.include_router(callback_router)
+    dp.include_router(start.router)
     
-async def on_startup():
-    start_scheduler()
+# async def on_startup():
+#     start_scheduler()
 
 async def main_function() -> None:
     ''' Entry point '''
@@ -27,6 +32,7 @@ async def main_function() -> None:
         admin_ids=[123412,12342],
         welcome_message='Okey, lets go!'
     )
+    
     dp['config'] = config
 
     
@@ -37,10 +43,9 @@ async def main_function() -> None:
         types.BotCommand(command='/menu', description='menu!'),
     ])
     
-    await on_startup()
+    # await on_startup()
     
-    await dp.start_polling(bot) # type:ignore
-    
+    await dp.start_polling(bot)    
     
 
 
