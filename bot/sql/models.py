@@ -38,7 +38,6 @@ class Quote(Base):
 
 class UserAuthor(Base):
     __tablename__ = 'user_authors'
-    
     user_id = Column(Integer, ForeignKey('users.id'), primary_key=True)
     author_id = Column(Integer, ForeignKey('authors.id'), primary_key=True)
 

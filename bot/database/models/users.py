@@ -1,6 +1,10 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from typing import TYPE_CHECKING
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from bot.database.models.base import Base
+from bot.database.models import Base
+
+if TYPE_CHECKING:
+    from bot.database.models import Author
 
 class User(Base):
     __tablename__ = 'users'
@@ -8,5 +12,4 @@ class User(Base):
     user_id: Mapped[int] = mapped_column(unique=True)
     username: Mapped[str] = mapped_column(nullable=True)
 
-
-    
+    authors: Mapped[list['Author']] = relationship(secondary='user_author', back_populates='users')

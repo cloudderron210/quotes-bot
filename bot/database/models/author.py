@@ -1,8 +1,10 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from typing import TYPE_CHECKING
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bot.database.models import Base
 
-
+if TYPE_CHECKING:
+    from bot.database.models import User
 
 class Author(Base):
     __tablename__ = 'authors'
@@ -10,6 +12,4 @@ class Author(Base):
     author: Mapped[str] = mapped_column(unique=True)
     def_: Mapped[bool] = mapped_column(name='def', default=False)
     
-    # quotes = relationship('Quote', back_populates='author')
-    # user_authors = relationship('UserAuthor', back_populates='author')
-    # settings_default_author = relationship('SettingsDefaultAuthor', back_populates='author')
+    users: Mapped[list['User']] = relationship(secondary='user_author', back_populates='authors')
