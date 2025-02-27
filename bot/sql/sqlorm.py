@@ -61,7 +61,6 @@ def add_quote_2(user_id, quote):
             .filter(User.user_id == user_id)
             .first()
         )
-    
         new_quote = Quote(author_id=setting_author.author_id, quote=quote) # type:ignore
         session.add(new_quote)
         session.commit()

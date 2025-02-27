@@ -3,7 +3,6 @@ from sqlalchemy.orm import sessionmaker, relationship, declarative_base
 from sqlalchemy.pool import QueuePool
 
 
-
 Base = declarative_base()
 
 engine = create_engine(

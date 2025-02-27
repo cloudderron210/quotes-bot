@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres 
+    restart: always
+    environment:
+      POSTGRES_USER: derron
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: debug3
+    ports:
+      - "5433:5432"
+    command: >
+      postgres -c logging-collector=on
+               -c log-statement=all
+               -c log-destination=stderr
+      
+      
+
+
+
+      
+
+
+
+      

@@ -13,7 +13,6 @@ dp = Dispatcher()
 
 def register_routers(dp: Dispatcher) -> None:
     ''' Registers routers'''
-
     dp.include_router(user_router)
     dp.include_router(inline_router)
     dp.include_router(callback_router)
