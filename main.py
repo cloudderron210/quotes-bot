@@ -7,9 +7,9 @@ from bot_instance import bot
 # from bot.handlers.user_handlers import user_router
 # from bot.handlers.inline_handlers import inline_router
 # from bot.handlers.callback_handlers import callback_router
-from bot.handlers import start, add_quote
+from bot.handlers import start, quotes_handler
 from bot.config import BotConfig
-# from scheduler import scheduler, start_scheduler
+from bot.services.scheduler import start_scheduler
 
 dp = Dispatcher()
 
@@ -21,10 +21,10 @@ def register_routers(dp: Dispatcher) -> None:
     # dp.include_router(inline_router)
     # dp.include_router(callback_router)
     dp.include_router(start.router)
-    dp.include_router(add_quote.router)
+    dp.include_router(quotes_handler.router)
     
-# async def on_startup():
-#     start_scheduler()
+async def on_startup():
+    start_scheduler()
 
 async def main_function() -> None:
     ''' Entry point '''

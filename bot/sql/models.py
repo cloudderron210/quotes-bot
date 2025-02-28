@@ -56,7 +56,6 @@ class SettingsDefaultAuthor(Base):
 
 class SettingsUserFrequency(Base):
     __tablename__ = 'settings_user_frequency'
-
     user_id = Column(Integer, ForeignKey('users.id'), primary_key=True)
     frequency_mode_id = Column(Integer, ForeignKey('frequency_modes.id'), nullable=False)
     interval_seconds = Column(Integer, default=5)

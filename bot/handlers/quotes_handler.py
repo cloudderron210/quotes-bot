@@ -34,12 +34,12 @@ async def cancel_add_quote(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     await callback_query.message.edit_text('Menu', reply_markup=kb.build_menu(callback_query.message.chat.id)) # type:ignore
     await state.clear()
-    
-    
-    
 
     
-                    
-    
+@router.callback_query((F.data == 'Get random quote') | (F.data == 'one_more_quote'))
+async def get_random_quote(callback_query: CallbackQuery, session: AsyncSession):
+    random_message = await crud.get_random_quote(callback_query.message.chat.id, session)
+    await callback_query.answer()
+    await callback_query.message.answer(f'''{random_message}. \n \n © <b></b> ''') 
 
-# new_quote: Quote = await crud.add_quote(author=current_author, text='text', session=session)
+    
