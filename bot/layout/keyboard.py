@@ -6,6 +6,7 @@ from bot.mysql_connection import get_authors_list
 authors = ['Jason Statham 🧔', 'Don Juan 🗿']
 menu_def = ['Get random quote','Turn on', 'Download quotes', 'Settings', 'Add quote']
 settings = ['Change Author', 'Change frequency']
+
 chat_states = {}
 authors_per_user = {}
 

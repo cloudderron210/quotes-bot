@@ -2,6 +2,8 @@ from aiogram.types import InlineKeyboardButton
 from aiogram.types.inline_keyboard_markup import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from bot.database import crud
+
 
 menu_def = ['Get random quote','Turn on', 'Download quotes', 'Settings', 'Add quote']
 
@@ -37,10 +39,39 @@ settings = InlineKeyboardMarkup(inline_keyboard=[
 
 choose_mode = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Mixed', callback_data='mixed_au')],
-    [InlineKeyboardButton(text='Choose author', callback_data='Choose author')],
+    [InlineKeyboardButton(text='Choose author', callback_data='choose author')],
     [InlineKeyboardButton(text='Back ↩️', callback_data='back_to_settings')],
 ])
 
+
+def build_authors(authors: list, new_author=None):
+    keyboard_builder = InlineKeyboardBuilder()
+    for author in authors:
+        keyboard_builder.button(text=author, callback_data=f'{author}_au')
+
+    keyboard_builder.button(text='New author', callback_data='new_author')
+    
+    keyboard_builder.button(text='Back to menu ↩️', callback_data='back_to_menu')
+        
+    keyboard_builder.adjust(1)
+    return keyboard_builder.as_markup()
+
+# def build_authors(chat_id, new_author=None):
+#         
+#     # user_authors = crud.(user_id=chat_id)
+#     keyboard_builder = InlineKeyboardBuilder()
+#         
+#     for author in user_authors:
+#         keyboard_builder.button(text=author, callback_data=f'{author}_au')
+#
+#     keyboard_builder.button(text='New author', callback_data='new_author')
+#     
+#     keyboard_builder.button(text='Back to menu ↩️', callback_data='back_to_menu')
+#         
+#     keyboard_builder.adjust(1)
+#     return keyboard_builder.as_markup()
+
+#QUOTES
 cancel_adding_new_quote = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Cancel', callback_data='cancel_quote')]
 ])

@@ -53,6 +53,7 @@ class AddingQuote:
             "Menu", reply_markup=kb.build_menu(callback_query.message.chat.id)#type:ignore
         )  
         await state.clear()
+        j
 
 
 class GettingRandomQuote:
@@ -103,11 +104,39 @@ class Settings:
     @staticmethod
     @router.callback_query(F.data == 'choose_mode')
     async def choose_mode(callback_query: CallbackQuery, session: AsyncSession):
-        authors = await crud.get_all_authors_of_user(callback_query.message.chat.id, session)
-        await callback_query.message.answer(f'{authors}')
+        await callback_query.answer()
+        await callback_query.message.edit_text('Choose Mode:', reply_markup=kb.choose_mode) 
+    
+    class ChooseMode:
+        ''' MIXED '''
+        @staticmethod
+        @router.callback_query(F.data == 'mixed_au')
+        async def mixed(callback_query: CallbackQuery):
+            pass
+            
+        ''' CHOOSE AUTHOR'''
+        @staticmethod
+        @router.callback_query(F.data == 'choose author')
+        async def choose_author(callback_query: CallbackQuery, session: AsyncSession):
+            message = callback_query.message
+            if message:
+                current_author = await crud.get_current_defualt_author(message.chat.id, session)
+                authors = await crud.get_all_authors_of_user(message.chat.id, session)
+                await message.answer(f'Choose author. Current: {current_author.name}', reply_markup=kb.build_authors(authors=authors))
+                
+        class ChooseAuthor:
+
+            ''' SET DEFAULT AUTHOR '''
+            @staticmethod
+            @router.callback_query(F.data.regexp(r'.*_au$'))
+            async def choose_author(callback_query: CallbackQuery, session: AsyncSession):
+                pass
+                    
+                    
+            
+            
         
-        # await callback_query.answer()
-        # await callback_query.message.edit_text('Choose mode', reply_markup=kb.choose_mode) #type:ignore
+        
         
     @staticmethod
     @router.callback_query(F.data == 'back_to_menu')
@@ -115,13 +144,16 @@ class Settings:
         await callback_query.answer()
         await callback_query.message.edit_text('Menu', reply_markup=kb.build_menu(callback_query.message.chat.id)) # type:ignore
         
-    @staticmethod 
-    @router.callback_query(F.data == 'Choose author')
-    async def choose_author(callback_query: CallbackQuery):
-        current = crud.get_current_defualt_author(callback_query.message.chat.id) # type:ignore
-        await callback_query.answer()
-        await callback_query.message.edit_text(f'Choose author. Current: {current}', reply_markup=kb.build_authors(callback_query.message.chat.id)) # type:ignore
         
+    @staticmethod 
+    @router.callback_query(F.data == 'frequency')
+    async def choose_frequency(callback_query: CallbackQuery, session: AsyncSession):
+        new_author = await crud.add_new_author(name='Jason Statham', user_id=callback_query.message.chat.id, session=session)
+        await callback_query.answer()
+        await callback_query.message.answer(f'author added: {new_author.name}')
+        
+    
+    
 async def periodic_message(chat_id: int, session: AsyncSession):
     result = await crud.get_random_quote(chat_id, session)
     await bot.send_message(chat_id, f''' "{result}." \n \n © <b></b> ''', parse_mode='HTML', reply_markup=kb.turn_off) 

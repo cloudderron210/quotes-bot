@@ -4,14 +4,24 @@ from sqlalchemy.orm import joinedload, selectinload
 from bot.database.models import Author, User, Quote, UserAuthor
 
 
-async def inser_new_author(user_id: int,name: str, session: AsyncSession) -> Author:
-    new_author = Author(name=name)
-    session.add(new_author)
-
+async def add_new_author(user_id: int, name: str, session: AsyncSession) -> Author | None:
+    stmt = select(User).options(selectinload(User.authors)).where(User.user_id == user_id)
+    user = await session.scalar(stmt)
+    if user:
+        await session.flush()
+        await session.refresh(user)
+        
+        new_author = Author(name=name)
+        session.add(new_author)
+        await session.flush()
+        await session.refresh(new_author)
     
-    await session.commit()
-    await session.refresh(new_author)
-    return new_author
+        if new_author:
+            user.authors.append(new_author)
+        
+            await session.commit()
+            await session.refresh(new_author)
+            return new_author
 
 async def init_new_user(user_id: int, username: str | None, session: AsyncSession):
     new_user = User(user_id=user_id, username=username)
@@ -43,22 +53,12 @@ async def get_all_quotes_of_author(author: Author, session: AsyncSession):
 
 async def add_quote(author: Author, session: AsyncSession, text: str) -> Quote:
     new_quote = Quote(author=author, quote_text=text)
-    
     session.add(new_quote)
     await session.commit()
     await session.refresh(new_quote)
     return new_quote
     
 async def get_random_quote(user_id: int, session: AsyncSession) -> str:
-    # stmt = (
-    #     select(User)
-    #     .options(
-    #         joinedload(User.def_author).
-    #             joinedload(Author.quotes)
-    #     )
-    #     .where(User.user_id == user_id)
-    # )
-    # user = await session.scalar(stmt)
     
     stmt =(
         select(Quote.quote_text)
@@ -75,24 +75,22 @@ async def get_random_quote(user_id: int, session: AsyncSession) -> str:
     else:
         return('')
     
-async def get_all_authors_of_user(user_id: int, session: AsyncSession):
-    
-    stmt = (
-        select(User)
-        .options(selectinload(User.authors))
-        .where(User.user_id == user_id)
-    )
-
+async def get_all_authors_of_user(user_id: int, session: AsyncSession) -> list:
     stmt = (
         select(Author.name)
         .join(UserAuthor, UserAuthor.author_id == Author.id)
         .join(User, User.id == UserAuthor.user_id)
-        .where()
+        .where(User.user_id == user_id)
     )
+    
+    result: Result = await session.execute(stmt)
+    authors = result.scalars().all()
+    
+    if authors:
+        return list(authors)
+    else:
+        return []
 
-    user = await session.scalar(stmt)
-    if user:
-        return user.authors 
     
     
     
