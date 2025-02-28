@@ -23,6 +23,15 @@ async def add_new_author(user_id: int, name: str, session: AsyncSession) -> Auth
             await session.refresh(new_author)
             return new_author
 
+async def set_default_author(user_id: int, author_id: int, session: AsyncSession):
+    stmt = update(User).where(User.user_id == user_id).values(default_author = author_id)
+    result = await session.execute(stmt)
+    await session.commit()
+    if result:
+        return True
+
+
+
 async def init_new_user(user_id: int, username: str | None, session: AsyncSession):
     new_user = User(user_id=user_id, username=username)
     session.add(new_user)
@@ -75,9 +84,9 @@ async def get_random_quote(user_id: int, session: AsyncSession) -> str:
     else:
         return('')
     
-async def get_all_authors_of_user(user_id: int, session: AsyncSession) -> list:
+async def get_all_authors_of_user(user_id: int, session: AsyncSession) -> list[Author]:
     stmt = (
-        select(Author.name)
+        select(Author)
         .join(UserAuthor, UserAuthor.author_id == Author.id)
         .join(User, User.id == UserAuthor.user_id)
         .where(User.user_id == user_id)
