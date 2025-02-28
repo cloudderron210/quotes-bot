@@ -11,6 +11,10 @@ chat_states = {}
 def build_menu(chat_id, change=False):
     current_state = chat_states.get(chat_id, 'Turn on')
     
+    if change:
+        current_state = 'Turn off' if current_state == 'Turn on' else 'Turn on'
+        chat_states[chat_id] = current_state
+        
     keyboard_builder = InlineKeyboardBuilder()
     current_menu = menu_def.copy()
     
@@ -24,9 +28,28 @@ def build_menu(chat_id, change=False):
     return keyboard_builder.as_markup()
     
 
+# SETTINGS
+settings = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='Mode', callback_data='choose_mode')],
+    [InlineKeyboardButton(text='Frequency ', callback_data='frequency')],
+    [InlineKeyboardButton(text='Back ↩️', callback_data='back_to_menu')],
+])
 
-
+choose_mode = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='Mixed', callback_data='mixed_au')],
+    [InlineKeyboardButton(text='Choose author', callback_data='Choose author')],
+    [InlineKeyboardButton(text='Back ↩️', callback_data='back_to_settings')],
+])
 
 cancel_adding_new_quote = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Cancel', callback_data='cancel_quote')]
+])
+
+one_more_quote = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='One more', callback_data='one_more_quote')]
+])
+
+turn_off = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='Turn off', callback_data='Turn off'),
+     InlineKeyboardButton(text='Change frequency', callback_data='set_frequency')]
 ])

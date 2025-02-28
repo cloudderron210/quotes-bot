@@ -35,16 +35,14 @@ async def main_function() -> None:
     )
     
     dp['config'] = config
+    await on_startup()
 
-    
     register_routers(dp)
     dp.message
     await bot.set_my_commands([
         types.BotCommand(command='/start', description='Start the bot'),
         types.BotCommand(command='/menu', description='menu!'),
     ])
-    
-    # await on_startup()
     
     await dp.start_polling(bot)    
     
