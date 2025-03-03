@@ -194,6 +194,22 @@ typing-extensions = ">=4"
 tz = ["backports.zoneinfo ; python_version < \"3.9\"", "tzdata"]
 
 [[package]]
+name = "alembic-postgresql-enum"
+version = "1.7.0"
+description = "Alembic autogenerate support for creation, alteration and deletion of enums"
+optional = false
+python-versions = "<4.0,>=3.7"
+groups = ["main"]
+files = [
+    {file = "alembic_postgresql_enum-1.7.0-py3-none-any.whl", hash = "sha256:2a64260f3f1ed96f1bf984f55cb838e5d915693b8478b7b6ffea13cc09184ae0"},
+    {file = "alembic_postgresql_enum-1.7.0.tar.gz", hash = "sha256:1a12a2b25f3f49440f419821888530496511573875438b6e9a08cbcb8a6f006f"},
+]
+
+[package.dependencies]
+alembic = ">=1.7"
+SQLAlchemy = ">=1.4"
+
+[[package]]
 name = "annotated-types"
 version = "0.7.0"
 description = "Reusable constraint types to use with typing.Annotated"
@@ -1384,5 +1400,5 @@ propcache = ">=0.2.0"
 
 [metadata]
 lock-version = "2.1"
-python-versions = ">=3.12"
-content-hash = "094df0c054a793489908b3d6745ac84eddbaf43f2ec766dcbbbd21068f8834a8"
+python-versions = ">=3.12,<4.0"
+content-hash = "baa3d10e24c95ee7b9329ebace4cbae2832fb139af2eb8f7d8224def59e9abb2"

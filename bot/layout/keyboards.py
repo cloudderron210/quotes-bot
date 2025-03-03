@@ -45,6 +45,12 @@ choose_mode = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Choose author', callback_data='choose author')],
     [InlineKeyboardButton(text='Back ↩️', callback_data='back_to_settings')],
 ])
+    
+frequency_settings = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='Set interval frequency', callback_data='set_frequency')],
+    [InlineKeyboardButton(text='Set time per day', callback_data='set_times')],
+    [InlineKeyboardButton(text='Set certain time of the day', callback_data='set_time_day')],
+])
 
 
 def build_authors(authors: list[Author]):

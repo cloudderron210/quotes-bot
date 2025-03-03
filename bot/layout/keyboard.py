@@ -66,12 +66,7 @@ def build_authors(chat_id, new_author=None):
     
     
     
-    
-frequency_settings = InlineKeyboardMarkup(inline_keyboard=[
-    [InKB(text='Set interval frequency', callback_data='set_frequency')],
-    [InKB(text='Set time per day', callback_data='set_times')],
-    [InKB(text='Set certain time of the day', callback_data='set_time_day')],
-])
+
 
 choose_author = InlineKeyboardMarkup(inline_keyboard=[
     [InKB(text='Jason Statham 🧔', callback_data='jason_statham')],

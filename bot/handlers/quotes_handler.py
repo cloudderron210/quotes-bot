@@ -180,7 +180,14 @@ class Settings:
     @staticmethod 
     @router.callback_query(F.data == 'frequency')
     async def choose_frequency(callback_query: CallbackQuery, session: AsyncSession):
-        pass
+        await callback_query.answer()
+        await callback_query.message.edit_text('Settings', reply_markup=kb.frequency_settings)
+    c
+    class FrequencySettings:
+        @staticmethod 
+        @router.callback_query(F.data == 'set_frequency')
+        async def set_frequency(callback_query: CallbackQuery, session: AsyncSession):
+        
         
     
     
@@ -188,3 +195,4 @@ async def periodic_message(chat_id: int, session: AsyncSession):
     result = await crud.get_random_quote(chat_id, session)
     await bot.send_message(chat_id, f''' "{result}." \n \n © <b></b> ''', parse_mode='HTML', reply_markup=kb.turn_off) 
     
+
