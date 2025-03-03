@@ -18,7 +18,7 @@ class SettingUserFrequency(Base):
     specific_times: Mapped[int] = mapped_column(nullable=True)
     send_at_nighttime: Mapped[bool] = mapped_column(default=True)
     
-    user: Mapped['User'] = relationship('User', back_populates='settings_user_frequency')
+    user: Mapped['User'] = relationship('User', back_populates='settings')
     
     
     

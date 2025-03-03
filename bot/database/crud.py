@@ -2,6 +2,7 @@ from sqlalchemy import Result, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, selectinload
 from bot.database.models import Author, User, Quote, UserAuthor
+from bot.database.models.settigs_user_frequency import SettingUserFrequency
 
 
 async def add_new_author(user_id: int, name: str, session: AsyncSession) -> Author | None:
@@ -43,8 +44,25 @@ async def init_new_user(user_id: int, username: str | None, session: AsyncSessio
     
     new_user_author = UserAuthor(user_id=new_user.id, author_id=2)
     session.add(new_user_author)
+
+    new_settings = SettingUserFrequency(user_id=new_user.id)
+    session.add(new_settings)
     
     await session.commit()
+
+async def set_interval_in_seconds(user_id: int, seconds: int, session: AsyncSession):
+    stmt = select(User).where(User.user_id == user_id)
+    user = await session.scalar(stmt)
+    if user:
+        stmt = (
+            update(SettingUserFrequency)
+            .where(SettingUserFrequency.user_id == user.id)
+            .values(interval_seconds=seconds)
+        )
+    await session.execute(stmt)
+    await session.commit()
+
+    
 
 async def get_current_defualt_author(user_id: int, session: AsyncSession) -> Author:
     stmt = select(User).options(selectinload(User.def_author)).where(User.user_id == user_id)

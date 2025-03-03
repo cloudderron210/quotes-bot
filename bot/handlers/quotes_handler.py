@@ -1,3 +1,5 @@
+import asyncio
+
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
@@ -5,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.database import crud
 from bot.database.models import Author, Quote
-from bot.layout.callbacks import AuthorCallback
-from bot.states import AuthorState
+from bot.layout.callbacks import AuthorCallback, UnitsCallback
+from bot.states import AuthorState, FrequencyState
 from bot.layout import keyboards as kb
 from bot.services.scheduler import scheduler 
 from apscheduler.triggers.interval import IntervalTrigger 
@@ -179,14 +181,56 @@ class Settings:
         
     @staticmethod 
     @router.callback_query(F.data == 'frequency')
-    async def choose_frequency(callback_query: CallbackQuery, session: AsyncSession):
+    async def choose_frequency(callback_query: CallbackQuery):
         await callback_query.answer()
         await callback_query.message.edit_text('Settings', reply_markup=kb.frequency_settings)
-    c
-    class FrequencySettings:
+        
+
+    class TimeSettings:
         @staticmethod 
-        @router.callback_query(F.data == 'set_frequency')
-        async def set_frequency(callback_query: CallbackQuery, session: AsyncSession):
+        @router.callback_query((F.data == 'set_frequency') | (F.data == 'cancel_adding_frequency'))
+        async def set_frequency(callback_query: CallbackQuery):
+            await callback_query.answer()
+            await callback_query.message.edit_text('Choose units of measurments ot set:', reply_markup=kb.frequency_units)
+            
+        class SetFrequency:
+            @staticmethod 
+            @router.callback_query(UnitsCallback.filter())
+            async def choose_units(callback_query: CallbackQuery, callback_data: UnitsCallback, session: AsyncSession, state: FSMContext):
+                await callback_query.answer()
+                if callback_data.units == 'seconds':
+                    await state.set_state(FrequencyState.seconds)
+                elif callback_data.units == 'minutes':
+                    await state.set_state(FrequencyState.minutes)
+                elif callback_data.units == 'hours':
+                    await state.set_state(FrequencyState.minutes)
+                    
+                await state.set_data({'multiplier': callback_data.multiplier})
+                await callback_query.message.edit_text(f'Set interval in {callback_data.units}:', reply_markup=kb.cancel_adding_frequency)
+                
+            @staticmethod 
+            
+            @router.message(F.text, FrequencyState())
+            async def set_interval(message: Message, session: AsyncSession, state: FSMContext):
+                if any(char.isalpha() for char in message.text):
+                    await message.answer('Try again. should contain only numbers', reply_markup=kb.cancel_adding_frequency)
+                else:
+                    multiplier = await state.get_value('multiplier')
+                    seconds = int(message.text) * int(multiplier)
+                    await crud.set_interval_in_seconds(
+                        user_id=message.chat.id,
+                        seconds=seconds,
+                        session=session
+                    )
+                    await message.answer(f'interval is now {seconds} seconds')
+                    await asyncio.sleep(12)
+                    await message.answer(#type:ignore
+                        "Menu", reply_markup=kb.build_menu(message.chat.id)#type:ignore
+                    )  
+                    await state.clear()
+                
+                
+            
         
         
     

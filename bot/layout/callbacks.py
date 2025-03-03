@@ -5,4 +5,7 @@ class AuthorCallback(CallbackData, prefix='au'):
     author:str 
     author_id: int
     
+class UnitsCallback(CallbackData, prefix='un'):
+    units: str
+    multiplier: int
    

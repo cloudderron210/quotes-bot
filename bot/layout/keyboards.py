@@ -5,7 +5,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from bot.database import crud
 from bot.database.models.author import Author
-from bot.layout.callbacks import AuthorCallback
+from bot.layout.callbacks import AuthorCallback, UnitsCallback
 
 
 menu_def = ['Get random quote','Turn on', 'Download quotes', 'Settings', 'Add quote']
@@ -50,6 +50,16 @@ frequency_settings = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Set interval frequency', callback_data='set_frequency')],
     [InlineKeyboardButton(text='Set time per day', callback_data='set_times')],
     [InlineKeyboardButton(text='Set certain time of the day', callback_data='set_time_day')],
+])
+
+frequency_units = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='Set interval in seconds', callback_data=UnitsCallback(units='seconds', multiplier=1).pack())],
+    [InlineKeyboardButton(text='Set interval in minutes', callback_data=UnitsCallback(units='minutes', multiplier=60).pack())],
+    [InlineKeyboardButton(text='Set interval in hours', callback_data=UnitsCallback(units='hours', multiplier=3600).pack())],
+])
+
+cancel_adding_frequency = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='Cancel', callback_data='cancel_adding_frequency')],
 ])
 
 
