@@ -5,7 +5,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from bot.database import crud
 from bot.database.models.author import Author
-from bot.layout.callbacks import AuthorCallback, UnitsCallback
+from bot.layout.callbacks import AuthorCallback, SpamModeCallback, UnitsCallback
 
 
 menu_def = ['Get random quote','Turn on', 'Download quotes', 'Settings', 'Add quote']
@@ -36,7 +36,7 @@ def build_menu(chat_id, change=False):
 # SETTINGS
 settings = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Mode', callback_data='choose_mode')],
-    [InlineKeyboardButton(text='Frequency ', callback_data='frequency')],
+    [InlineKeyboardButton(text='Frequency ', callback_data='choose_frequency')],
     [InlineKeyboardButton(text='Back ↩️', callback_data='back_to_menu')],
 ])
 
@@ -45,7 +45,14 @@ choose_mode = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Choose author', callback_data='choose author')],
     [InlineKeyboardButton(text='Back ↩️', callback_data='back_to_settings')],
 ])
+
     
+choose_spam_time_mode = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='Interval frequency', callback_data=SpamModeCallback(name='interval').pack())],
+    [InlineKeyboardButton(text='Times per day', callback_data=SpamModeCallback(name='times_per_day').pack())],
+    [InlineKeyboardButton(text='Certain times at the day', callback_data=SpamModeCallback(name='specific_times').pack())],
+])
+
 frequency_settings = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Set interval frequency', callback_data='set_frequency')],
     [InlineKeyboardButton(text='Set time per day', callback_data='set_times')],

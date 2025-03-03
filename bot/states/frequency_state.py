@@ -6,3 +6,4 @@ class FrequencyState(StatesGroup):
     seconds = State()
     minutes = State()
     hours = State()
+    times_per_day = State()

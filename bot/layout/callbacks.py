@@ -9,3 +9,5 @@ class UnitsCallback(CallbackData, prefix='un'):
     units: str
     multiplier: int
    
+class SpamModeCallback(CallbackData, prefix='sp'):
+    name: str
