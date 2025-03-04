@@ -71,12 +71,12 @@ async def get_spam_mode(user_id: int, session: AsyncSession):
     stmt = select(User.frequency_mode).where(User.user_id == user_id)
     return await session.scalar(stmt)
         
-async def set_interval_in_seconds(
+async def set_interval(
     user_id: int,
     session: AsyncSession,
     seconds: int | None = None,
     times_per_day: int | None = None,
-    specific_times: str | None = None
+    specific_times: list[str] | None = None
 ):
     stmt = select(User).where(User.user_id == user_id)
     user = await session.scalar(stmt)

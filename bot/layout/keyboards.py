@@ -51,7 +51,9 @@ choose_spam_time_mode = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Interval frequency', callback_data=SpamModeCallback(name='interval').pack())],
     [InlineKeyboardButton(text='Times per day', callback_data=SpamModeCallback(name='times_per_day').pack())],
     [InlineKeyboardButton(text='Certain times at the day', callback_data=SpamModeCallback(name='specific_times').pack())],
+    [InlineKeyboardButton(text='Configure frequency', callback_data='configure_frequency')],
 ])
+
 
 frequency_settings = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Set interval frequency', callback_data='set_frequency')],
@@ -69,6 +71,10 @@ cancel_adding_frequency = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Cancel', callback_data='cancel_adding_frequency')],
 ])
 
+set_times = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='Set times', callback_data='set_specific_times')],
+    [InlineKeyboardButton(text='Cancel', callback_data='cancel_adding_frequency')],
+])
 
 def build_authors(authors: list[Author]):
     keyboard_builder = InlineKeyboardBuilder()

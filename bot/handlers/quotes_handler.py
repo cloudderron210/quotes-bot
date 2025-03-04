@@ -8,12 +8,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from bot.database import crud
 from bot.database.models import Author, Quote
 from bot.database.models.users import FrequencyEnum
-from bot.helpers import periodic_message, schedule_messages 
+from bot.helpers import periodic_message, schedule_messages, start_periodic_messages 
 from bot.layout.callbacks import AuthorCallback, SpamModeCallback, UnitsCallback
-from bot.states import AuthorState, FrequencyState
+from bot.states import AuthorState, FrequencyState, Specifictime
 from bot.layout import keyboards as kb
 from bot.services.scheduler import scheduler 
-from apscheduler.triggers.interval import IntervalTrigger 
+from apscheduler.triggers.interval import IntervalTrigger
+
 
 router = Router()
 
@@ -80,21 +81,20 @@ class GettingRandomQuote:
         current_settings = await crud.get_frequency_settings(user_id, session)
 
         if current_mode == FrequencyEnum.INTERVAL:
-            scheduler.add_job(
-                func=periodic_message,
-                trigger=IntervalTrigger(seconds=5),
-                args=[callback_query.message.chat.id, session], #type:ignore
-                id=f"random_message. chat_id: {callback_query.message.chat.id}",
-            ) 
+            await start_periodic_messages(
+                chat_id=user_id,
+                seconds=current_settings.interval_seconds,
+                session=session
+            )
             await callback_query.message.answer( # type: ignore
                 f"Okey, let`s go...{current_mode}",
-                reply_markup=kb.build_menu(callback_query.message.chat.id), #type: ignore
+                reply_markup=kb.build_menu(callback_query.message.chat.id, change=True), #type: ignore
             )  
 
         if current_mode == FrequencyEnum.TIMES_PER_DAY:
             await callback_query.message.answer( # type: ignore
                 f"Okey, let`s go...{current_mode}",
-                reply_markup=kb.build_menu(callback_query.message.chat.id), #type: ignore
+                reply_markup=kb.build_menu(callback_query.message.chat.id, change=True), #type: ignore
             )  
             num_messages = current_settings.times_per_day
             await schedule_messages(
@@ -104,14 +104,19 @@ class GettingRandomQuote:
             )
             
             
-            
-        
         
     @staticmethod
     @router.callback_query(F.data == 'Turn off')
     async def turn_off(callback_query: CallbackQuery):
-        await callback_query.message.edit_text("Turned off", reply_markup=kb.build_menu(callback_query.message.chat.id,change=True))  # type:ignore
-        scheduler.remove_job(job_id='random_message')
+        user_id = callback_query.message.chat.id
+        await callback_query.message.edit_text("Turned off", reply_markup=kb.build_menu(user_id,change=True))  # type:ignore
+        jobs = scheduler.get_jobs()
+        for job in jobs:
+            if job.id.startswith(f'{user_id}_'):
+                scheduler.remove_job(job.id)
+            
+        await callback_query.message.answer(f'{jobs}')
+        # scheduler.remove_job(job_id=f'{callback_query.message.chat.id}')
 
         
 class Settings:
@@ -201,24 +206,26 @@ class Settings:
 
     @staticmethod 
     @router.callback_query(SpamModeCallback.filter())
-    async def choose_frequency(callback_query: CallbackQuery, callback_data: SpamModeCallback, session: AsyncSession):
+    async def set_spam_mode(callback_query: CallbackQuery, callback_data: SpamModeCallback, session: AsyncSession):
         try:
             await crud.set_spam_mode(callback_query.message.chat.id, callback_data.name, session)
             await callback_query.message.answer('success!')
         except Exception as e:
             await callback_query.message.answer(f'{e}')
     
+    @staticmethod 
+    @router.callback_query(F.data == 'configure_frequency')
+    async def configure_frequency(callback_query: CallbackQuery, session: AsyncSession):
+        await callback_query.answer()
+        await callback_query.message.answer('Choose mode to configure:', reply_markup=kb.frequency_settings)
         
 
     class TimeSettings:
-
-            
-        
         @staticmethod 
         @router.callback_query((F.data == 'set_frequency') | (F.data == 'cancel_adding_frequency'))
         async def set_frequency(callback_query: CallbackQuery):
             await callback_query.answer()
-            await callback_query.message.edit_text('Choose units of measurments ot set:', reply_markup=kb.frequency_units)
+            await callback_query.message.edit_text('Choose units of measurments to set:', reply_markup=kb.frequency_units)
             
         class TimesPerDay:
             @staticmethod 
@@ -269,6 +276,63 @@ class Settings:
                         "Menu", reply_markup=kb.build_menu(message.chat.id)#type:ignore
                     )  
                     await state.clear()
+
+
+
+                    """ NEED TO BE IMPROVED"""
+        class SetTimePerDay:
+            @staticmethod 
+            @router.callback_query(F.data == 'set_time_day')
+            async def enter_time_placeholder(callback_query: CallbackQuery, state: FSMContext):
+                await callback_query.answer()
+                await callback_query.message.answer('Enter time you want to receive quote:', reply_markup=kb.set_times)
+                await state.set_state(Specifictime.enter_time)
+                await state.set_data({'times':[]})  
+                
+            @staticmethod 
+            @router.message(F.text, Specifictime.enter_time)
+            async def enter_time(message: Message, state: FSMContext):
+                current_times = await state.get_value('times')
+                current_times.append(message.text)
+                await state.set_data({'times': current_times})
+                await message.answer(f'Enter time you want to receive quote: {await state.get_value('times')}', reply_markup=kb.set_times)
+                
+            @staticmethod 
+            @router.callback_query(F.data == 'set_specific_times')
+            async def set_time(callback_query: CallbackQuery, state: FSMContext, session: AsyncSession):
+                current_times = await state.get_value('times')
+                await crud.set_interval(
+                    callback_query.message.chat.id,
+                    session=session,
+                    specific_times=current_times
+                )
+                await callback_query.message.answer(f'{current_times} has been set')
+                await state.clear()
+                
+
+            
+                
+
+                
+                
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+            
                     
                     
     
