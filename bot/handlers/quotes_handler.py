@@ -102,7 +102,17 @@ class GettingRandomQuote:
                 num_messages=num_messages,
                 session=session
             )
+        if current_mode == FrequencyEnum.SPECIFIC_TIMES:
+            await schedule_messages(
+                chat_id=callback_query.message.chat.id,
+                times=current_settings.specific_times,
+                session=session
+            )
             
+            await callback_query.message.answer( # type: ignore
+                f"Okey, let`s go...{current_mode} {scheduler.get_jobs()}",
+                reply_markup=kb.build_menu(callback_query.message.chat.id, change=True), #type: ignore
+            )  
             
         
     @staticmethod
@@ -115,7 +125,7 @@ class GettingRandomQuote:
             if job.id.startswith(f'{user_id}_'):
                 scheduler.remove_job(job.id)
             
-        await callback_query.message.answer(f'{jobs}')
+        await callback_query.message.answer(f'{len(jobs)}')
         # scheduler.remove_job(job_id=f'{callback_query.message.chat.id}')
 
         
@@ -189,7 +199,6 @@ class Settings:
                     await state.clear()
                 await state.clear()
                 
-        
         
     @staticmethod
     @router.callback_query(F.data == 'back_to_menu')
