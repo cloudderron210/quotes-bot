@@ -122,16 +122,17 @@ async def get_current_defualt_author(user_id: int, session: AsyncSession) -> Aut
     return user.def_author
 
 
-async def get_all_quotes_of_author(author: Author, session: AsyncSession):
+async def get_quotes_of_default_author(user_id: int, session: AsyncSession):
     stmt = (
-        select(Author)
-        .options(selectinload(Author.quotes))
-        .where(Author.id == author.id)
+        select(Quote.quote_text)
+        .join(Author, Quote.author_id == Author.id)
+        .join(User, Author.id == User.default_author)
+        .where(User.user_id == user_id)
     )
     result: Result = await session.execute(stmt)
-    authorr = result.scalar()
-    if authorr:
-        return authorr.quotes
+    quotes = result.scalars().all()
+    if quotes:
+        return quotes 
 
 
 async def add_quote(author: Author, session: AsyncSession, text: str) -> Quote:
@@ -142,10 +143,9 @@ async def add_quote(author: Author, session: AsyncSession, text: str) -> Quote:
     return new_quote
 
 
-async def get_random_quote(user_id: int, session: AsyncSession) -> str:
-
+async def get_random_quote(user_id: int, session: AsyncSession) -> tuple | None:
     stmt = (
-        select(Quote.quote_text)
+        select(Quote.quote_text, Author.name)
         .join(Author, Author.id == Quote.author_id)
         .join(User, User.default_author == Author.id)
         .where(User.user_id == user_id)
@@ -153,11 +153,12 @@ async def get_random_quote(user_id: int, session: AsyncSession) -> str:
         .limit(1)
     )
 
-    result = await session.scalar(stmt)
-    if result:
-        return result
+    result = await session.execute(stmt)
+    row = result.fetchone()
+    if row:
+        return tuple(row)
     else:
-        return ""
+        return None
 
 
 async def get_all_authors_of_user(user_id: int, session: AsyncSession) -> list[Author]:
