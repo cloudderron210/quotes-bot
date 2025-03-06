@@ -6,7 +6,7 @@ from bot.layout import keyboards as kb
 
 router = Router()
 
-@router.callback_query(F.data == 'Settings')
+@router.callback_query(F.data == 'Settings ⚙️')
 async def settings(callback_query: CallbackQuery):
     await callback_query.answer()
     await callback_query.message.edit_text('Settings', reply_markup=kb.settings) # type:ignore

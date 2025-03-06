@@ -30,7 +30,7 @@ async def set_default_author(callback_query: CallbackQuery, callback_data: Autho
     message = callback_query.message
     if message:
         result = await crud.set_default_author(message.chat.id, callback_data.author_id, session=session)
-        await message.answer(f'Success! {result}, {callback_data.author_id}')
+        await message.answer(f'{callback_data.author_id} is now default')
         
 ''' ADD NEW AUTHOR '''
 @router.callback_query(F.data == 'new_author')
