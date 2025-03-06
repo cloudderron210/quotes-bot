@@ -16,6 +16,6 @@ async def menu(msg: Message, session: AsyncSession):
         new_user = await crud.init_new_user(user_id, username, session)
         await msg.answer('New user added!')
     except Exception as e:
-        await msg.answer(f'{e}')
+        print(f'{e}')
     await msg.answer('Menu:', reply_markup=kb.build_menu(msg.chat.id))
 

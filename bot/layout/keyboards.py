@@ -8,16 +8,16 @@ from bot.database.models.author import Author
 from bot.layout.callbacks import AuthorCallback, SpamModeCallback, UnitsCallback
 
 
-menu_def = ['Get random quote','Turn on', 'Download quotes', 'Settings', 'Add quote']
+menu_def = ['Get random quote','Turn on scheduler ▶️', 'Download quotes ⬇️', 'Settings ⚙️', 'Add quote ➕']
 
 chat_states = {}
 
 
 def build_menu(chat_id, change=False):
-    current_state = chat_states.get(chat_id, 'Turn on')
+    current_state = chat_states.get(chat_id, 'Turn on scheduler ▶️')
     
     if change:
-        current_state = 'Turn off' if current_state == 'Turn on' else 'Turn on'
+        current_state = 'Turn off scheduler ⏹' if current_state == 'Turn on scheduler ▶️' else 'Turn on scheduler ▶️'
         chat_states[chat_id] = current_state
         
     keyboard_builder = InlineKeyboardBuilder()
@@ -52,6 +52,7 @@ choose_spam_time_mode = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Times per day', callback_data=SpamModeCallback(name='times_per_day').pack())],
     [InlineKeyboardButton(text='Certain times at the day', callback_data=SpamModeCallback(name='specific_times').pack())],
     [InlineKeyboardButton(text='Configure frequency', callback_data='configure_frequency')],
+    [InlineKeyboardButton(text='Back to settings ↩️', callback_data='Settings ⚙️')],
 ])
 
 
@@ -100,6 +101,6 @@ one_more_quote = InlineKeyboardMarkup(inline_keyboard=[
 ])
 
 turn_off = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Turn off', callback_data='Turn off'),
-     InlineKeyboardButton(text='Change frequency', callback_data='set_frequency')]
+    [InlineKeyboardButton(text='Turn off scheduler ⏹', callback_data='Turn off scheduler ⏹'),
+     InlineKeyboardButton(text='Change frequency', callback_data='choose_frequency')]
 ])

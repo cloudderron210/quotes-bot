@@ -26,9 +26,13 @@ async def get_random_quote(callback_query: CallbackQuery, session: AsyncSession)
         await callback_query.message.answer(
             f"""{quote_result[0]}. \n \n © <b>{quote_result[1]}</b> """, parse_mode='HTML', reply_markup=kb.one_more_quote
         )
+    else:
+        await callback_query.answer()
+        await callback_query.message.answer('Add quotes first!')
+        
 
 
-@router.callback_query(F.data == "Turn on")
+@router.callback_query(F.data == "Turn on scheduler ▶️")
 async def turn_on(callback_query: CallbackQuery, session: AsyncSession):
     user_id = callback_query.message.chat.id
     current_mode = await crud.get_spam_mode(user_id, session)
@@ -40,16 +44,17 @@ async def turn_on(callback_query: CallbackQuery, session: AsyncSession):
             seconds=current_settings.interval_seconds,
             session=session
         )
-        await callback_query.message.answer( # type: ignore
-            f"Okey, let`s go...{current_mode}",
-            reply_markup=kb.build_menu(callback_query.message.chat.id, change=True), #type: ignore
+        await callback_query.message.answer( 
+            f"Okey, let`s go...",
         )  
+        kb.build_menu(callback_query.message.chat.id, change=True)
 
     if current_mode == FrequencyEnum.TIMES_PER_DAY:
         await callback_query.message.answer( # type: ignore
-            f"Okey, let`s go...{current_mode}",
-            reply_markup=kb.build_menu(callback_query.message.chat.id, change=True), #type: ignore
+            f"Okey, let`s go...",
         )  
+        kb.build_menu(callback_query.message.chat.id, change=True)
+        
         num_messages = current_settings.times_per_day
         await schedule_messages(
             chat_id=callback_query.message.chat.id,
@@ -64,27 +69,28 @@ async def turn_on(callback_query: CallbackQuery, session: AsyncSession):
         )
         
         await callback_query.message.answer( # type: ignore
-            f"Okey, let`s go...{current_mode} {scheduler.get_jobs()}",
-            reply_markup=kb.build_menu(callback_query.message.chat.id, change=True), #type: ignore
+            f"Okey, let`s go...",
         )  
+        kb.build_menu(callback_query.message.chat.id, change=True)
 
-@router.callback_query(F.data == "Download quotes")
+@router.callback_query(F.data == "Download quotes ⬇️")
 async def download_quotes(callback_query: CallbackQuery, session: AsyncSession):
     quotes = await crud.get_quotes_of_default_author(callback_query.message.chat.id, session)
-    quotes_str = '\n'.join(quotes)
-    file = BytesIO(quotes_str.encode('utf-8'))
-    buffered_file = BufferedInputFile(file.getvalue(), filename='quotes.txt')
-    
-    await callback_query.message.answer_document(document=buffered_file)
-    # await callback_query.message.answer(f'{quotes_str}')
+    if quotes:
+        quotes_str = '\n'.join(quotes)
+        file = BytesIO(quotes_str.encode('utf-8'))
+        buffered_file = BufferedInputFile(file.getvalue(), filename='quotes.txt')
+        await callback_query.message.answer_document(document=buffered_file)
+    else:
+        await callback_query.message.answer('Add quotes first!')
     
 
-@router.callback_query(F.data == 'Turn off')
+@router.callback_query(F.data == 'Turn off scheduler ⏹')
 async def turn_off(callback_query: CallbackQuery):
     user_id = callback_query.message.chat.id
     await callback_query.message.edit_text("Turned off", reply_markup=kb.build_menu(user_id,change=True))  # type:ignore
     jobs = scheduler.get_jobs()
     for job in jobs:
-        if job.id.startswith(f'{user_id}_'):
+        if job.id.startswith(f'{user_id}'):
             scheduler.remove_job(job.id)
     await callback_query.message.answer(f'{len(jobs)} jobs deleted')

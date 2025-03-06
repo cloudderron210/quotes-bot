@@ -39,15 +39,25 @@ async def set_default_author(user_id: int, author_id: int, session: AsyncSession
 
 
 async def init_new_user(user_id: int, username: str | None, session: AsyncSession):
+    stmt = select(Author).order_by(Author.id)
+    result = await session.execute(stmt)
+    author = result.first()
+    if not author:
+        author = Author(name='Don Juan')
+        session.add(author)
+        await session.flush()
+        await session.refresh(author)
+        
+    
     new_user = User(user_id=user_id, username=username)
     session.add(new_user)
     await session.flush()
     await session.refresh(new_user)
 
-    stmt = update(User).where(User.id == new_user.id).values(default_author=2)
+    stmt = update(User).where(User.id == new_user.id).values(default_author=author.id)
     await session.execute(stmt)
 
-    new_user_author = UserAuthor(user_id=new_user.id, author_id=2)
+    new_user_author = UserAuthor(user_id=new_user.id, author_id=author.id)
     session.add(new_user_author)
 
     new_settings = SettingUserFrequency(user_id=new_user.id)

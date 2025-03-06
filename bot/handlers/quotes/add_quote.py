@@ -17,7 +17,7 @@ from apscheduler.triggers.interval import IntervalTrigger
 router = Router()
 
 
-@router.callback_query(F.data == "Add quote")
+@router.callback_query(F.data == "Add quote ➕")
 async def add_quote_button(
     callback_query: CallbackQuery, state: FSMContext, session: AsyncSession
 ):
@@ -25,7 +25,7 @@ async def add_quote_button(
         callback_query.message.chat.id, session
     )  # type:ignore
     await state.set_state(AuthorState.add_quote)
-    await callback_query.message.edit_text(#type:ignore
+    await callback_query.message.answer(#type:ignore
         f"Enter new quote for {current_author.name}",
         reply_markup=kb.cancel_adding_new_quote,
     )  # type:ignore
@@ -39,7 +39,7 @@ async def add_quote(message: Message, session: AsyncSession):
         author=current_author, text=message.text, session=session #type:ignore
     )  
 
-    await message.answer(f"{new_quote} has been added")
+    await message.answer(f"New quote has been added")
     await message.answer(
         f"Enter new quote for {current_author.name}",
         reply_markup=kb.cancel_adding_new_quote,
