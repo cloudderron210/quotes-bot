@@ -4,9 +4,6 @@ import logging
 from aiogram import Dispatcher, types
 from bot.middleware import DatabaseMiddleware
 from bot_instance import bot
-# from bot.handlers.user_handlers import user_router
-# from bot.handlers.inline_handlers import inline_router
-# from bot.handlers.callback_handlers import callback_router
 from bot.config import BotConfig
 from bot.services.scheduler import start_scheduler
 from bot.handlers import router as root_router
@@ -22,7 +19,6 @@ async def on_startup():
     start_scheduler()
 
 async def main_function() -> None:
-    ''' Entry point '''
 
     config = BotConfig(
         admin_ids=[123412,12342],

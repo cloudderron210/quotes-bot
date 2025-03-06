@@ -1,4 +1,3 @@
-TOKEN = '7101517441:AAFzmV5NDxLKgvr33zDvew3uncw642kQL10'
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
