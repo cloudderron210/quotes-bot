@@ -1,20 +1,35 @@
 services:
-  db:
-    image: postgres 
-    restart: always
-    environment:
-      POSTGRES_USER: derron
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: debug3
+  app:
+    build: .
+    depends_on:
+      - db
+    networks:
+      - my_network
+    env_file:  # Use .env file for environment variables
+      - .env
     ports:
-      - "5433:5432"
-    command: >
-      postgres -c logging-collector=on
-               -c log-statement=all
-               -c log-destination=stderr
-      
-      
+      - "8000:8000"
 
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: debug
+    networks:
+      - my_network
+    ports:
+      - "5432:5432"
+    # volumes:
+    #   - db-data:/var/lib/postgresql/data  
+
+networks:
+  my_network:
+    driver: bridge
+    
+# volumes:
+#   db-data:
+    
 
 
       
