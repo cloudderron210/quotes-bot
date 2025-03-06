@@ -6,13 +6,12 @@ from bot.mysql_connection import get_authors_list
 authors = ['Jason Statham 🧔', 'Don Juan 🗿']
 menu_def = ['Get random quote','Turn on', 'Download quotes', 'Settings', 'Add quote']
 settings = ['Change Author', 'Change frequency']
+
 chat_states = {}
 authors_per_user = {}
 
 def build_menu(chat_id, change=False):
     current_state = chat_states.get(chat_id, 'Turn on')
-
-    
     if change:
         current_state = 'Turn off' if current_state == 'Turn on' else 'Turn on'
         chat_states[chat_id] = current_state
@@ -24,7 +23,6 @@ def build_menu(chat_id, change=False):
     
     for item in current_menu:
         keyboard_builder.button(text=item, callback_data=item)
-
     
     keyboard_builder.adjust(1)
     
@@ -50,15 +48,6 @@ def build_frequency():
     return keyboard_builder.as_markup()
     
     
-    
-        
-    
-    
-    
-
-
-    
-    
 def build_authors(chat_id, new_author=None):
         
     user_authors = build_authors_list(user_id=chat_id)
@@ -77,12 +66,7 @@ def build_authors(chat_id, new_author=None):
     
     
     
-    
-frequency_settings = InlineKeyboardMarkup(inline_keyboard=[
-    [InKB(text='Set interval frequency', callback_data='set_frequency')],
-    [InKB(text='Set time per day', callback_data='set_times')],
-    [InKB(text='Set certain time of the day', callback_data='set_time_day')],
-])
+
 
 choose_author = InlineKeyboardMarkup(inline_keyboard=[
     [InKB(text='Jason Statham 🧔', callback_data='jason_statham')],

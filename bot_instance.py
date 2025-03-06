@@ -1,8 +1,7 @@
 from aiogram import Bot
-from bot.config import TOKEN
+from bot.config import settings
 
-
-bot = Bot(TOKEN)
+bot = Bot(settings.token)
 
 
 
