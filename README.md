@@ -3,6 +3,7 @@
 
 A Telegram bot built with **Aiogram**, **SQLAlchemy**, and **PostgreSQL** that allows users to manage their own collection of quotes and authors. Users can add authors, add quotes to these authors, and schedule quote spam in three different modes.
 
+https://t.me/cloud210_quotes_bot
 ---
 
 ## Features
